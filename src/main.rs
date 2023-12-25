@@ -2,6 +2,7 @@ extern crate dotenv;
 
 use clap::Parser;
 use lessannoyingcrm_salesnavigator::cli;
+use lessannoyingcrm_salesnavigator::csv;
 use tokio::fs;
 
 #[tokio::main]
@@ -17,12 +18,14 @@ async fn main() -> anyhow::Result<()> {
     let args = cli::Args::parse();
     assert!(!args.file_path.is_empty());
 
-    // Validate File
+    // Validate and Read File into Bytes
     let file_exists = fs::try_exists(&args.file_path).await?;
     if !file_exists {
-        println!("File with file path {} does not exist", args.file_path);
+        println!("File with file path {} does not exist", &args.file_path);
         std::process::exit(1);
     }
+    let records = csv::parser::parse_csv(&args.file_path)?;
+    println!("{:?}", records);
 
     Ok(())
 }

@@ -1,4 +1,4 @@
-pub mod get_contacts_companies;
+pub mod create_contact;
 
 use async_trait::async_trait;
 use serde::{de::DeserializeOwned, Serialize};

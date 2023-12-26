@@ -27,12 +27,21 @@ async fn main() -> anyhow::Result<()> {
         println!("File with file path {} does not exist", &args.file_path);
         std::process::exit(1);
     }
-    let records = csv::parser::parse_csv(&args.file_path)?;
-    println!("{:?}", records);
 
-    let search_terms = vec!["Jon".to_string()];
-    let req = api::get_contacts::CompanyContactSearchRequest::new(search_terms);
-    let res = req.send(&lcm_api_key, APIAction::GetContacts).await?;
+    // Aggregate Records
+    let records = csv::parser::parse_csv(&args.file_path)?;
+    let contact_names = records
+        .iter()
+        .map(|contact| format!("{} {}", contact.first_name, contact.last_name))
+        .collect::<Vec<String>>();
+
+    // Make Request
+    let search_terms = contact_names;
+    let req = api::get_contacts_companies::CompanyContactSearchRequest::new(
+        APIAction::GetContacts,
+        search_terms,
+    );
+    let res = req.send(&lcm_api_key).await?;
     println!("Response is {:?}", res);
 
     Ok(())

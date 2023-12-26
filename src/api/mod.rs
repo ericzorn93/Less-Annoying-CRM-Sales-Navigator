@@ -1,4 +1,4 @@
-pub mod get_contacts;
+pub mod get_contacts_companies;
 
 use async_trait::async_trait;
 use serde::{de::DeserializeOwned, Serialize};
@@ -7,7 +7,7 @@ use serde::{de::DeserializeOwned, Serialize};
 pub const LCM_API: &str = "https://api.lessannoyingcrm.com/v2/";
 
 // Enums
-#[derive(strum::EnumString, Serialize)]
+#[derive(strum::EnumString, Serialize, Clone, Debug)]
 pub enum APIAction {
     GetContacts,
     GetCompanies,
@@ -19,11 +19,11 @@ pub trait APISend<R>
 where
     R: DeserializeOwned,
 {
-    async fn send(&self, api_key: &str, api_action: APIAction) -> anyhow::Result<R>;
+    async fn send(&self, api_key: &str) -> anyhow::Result<R>;
 }
 
 // Structs
-#[derive(Serialize)]
+#[derive(Serialize, Clone, Debug)]
 pub struct RPCCall<P: Sized>
 where
     P: Serialize,

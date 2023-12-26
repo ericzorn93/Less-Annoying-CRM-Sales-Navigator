@@ -50,18 +50,21 @@ async fn main() -> anyhow::Result<()> {
     let user_id_one = lcm_personal_user_id.clone();
     let api_key_one = lcm_api_key.clone();
     let task_one = tokio::task::spawn(async move {
+        println!("Starting Half One");
         handle_chunks(user_id_one, api_key_one, half_one).await;
     });
 
     let user_id_two = lcm_personal_user_id.clone();
     let api_key_two = lcm_api_key.clone();
     let task_two = tokio::task::spawn(async move {
+        println!("Starting Half Two");
         handle_chunks(user_id_two, api_key_two, half_two).await;
     });
 
     // Make Request
     let _ = tokio::join!(task_one, task_two);
 
+    println!("Complete!!!");
     Ok(())
 }
 

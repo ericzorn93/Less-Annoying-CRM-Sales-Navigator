@@ -30,13 +30,12 @@ async fn main() -> anyhow::Result<()> {
 
     // Aggregate Records
     let records = csv::parser::parse_csv(&args.file_path)?;
-    let contact_names = records
+    let search_terms = records
         .iter()
         .map(|contact| format!("{} {}", contact.first_name, contact.last_name))
         .collect::<Vec<String>>();
 
     // Make Request
-    let search_terms = contact_names;
     let req = api::get_contacts_companies::CompanyContactSearchRequest::new(
         APIAction::GetContacts,
         search_terms,

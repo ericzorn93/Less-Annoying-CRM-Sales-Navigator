@@ -1,5 +1,7 @@
 extern crate dotenv;
 
+use core::time;
+
 use clap::Parser;
 use lessannoyingcrm_salesnavigator::api::{create_contact, APIAction, APISend};
 use lessannoyingcrm_salesnavigator::cli;
@@ -37,29 +39,50 @@ async fn main() -> anyhow::Result<()> {
         std::process::exit(1);
     }
     let record_chunks: Vec<Vec<SalesNavigatorRecord>> =
-        records.chunks(3).map(|c| c.to_vec()).collect();
+        records.chunks(2).map(|c| c.to_vec()).collect();
+    let record_chunks = record_chunks[..3].to_vec();
 
     let mid = record_chunks.len() / 2;
     let (half_one, half_two) = record_chunks.split_at(mid);
     let (half_one, half_two) = (half_one.to_vec(), half_two.to_vec());
 
-    tokio::task::spawn(async move {
-        println!("{:?}", half_one);
-
-        let req = create_contact::CreateContactRequest::new(
-            lcm_personal_user_id,
-            APIAction::CreateContact,
-            half_one.get(0).unwrap().get(0).unwrap(),
-        );
-        let res = req.send(&lcm_api_key).await.unwrap();
-        println!("ContactId - {}", res.contact_id);
+    // Send Requests
+    let user_id_one = lcm_personal_user_id.clone();
+    let api_key_one = lcm_api_key.clone();
+    let task_one = tokio::task::spawn(async move {
+        handle_chunks(user_id_one, api_key_one, half_one).await;
     });
 
-    tokio::task::spawn(async move {
-        half_two;
+    let user_id_two = lcm_personal_user_id.clone();
+    let api_key_two = lcm_api_key.clone();
+    let task_two = tokio::task::spawn(async move {
+        handle_chunks(user_id_two, api_key_two, half_two).await;
     });
 
     // Make Request
+    let _ = tokio::join!(task_one, task_two);
 
     Ok(())
+}
+
+async fn handle_chunks(
+    lcm_personal_user_id: String,
+    lcm_api_key: String,
+    records: Vec<Vec<SalesNavigatorRecord>>,
+) {
+    for chunk in &records {
+        for record in chunk {
+            let req = create_contact::CreateContactRequest::new(
+                lcm_personal_user_id.clone(),
+                APIAction::CreateContact,
+                record,
+            );
+            let _ = req
+                .send(&lcm_api_key)
+                .await
+                .expect("LCM Create Customer Failed");
+        }
+
+        tokio::time::sleep(time::Duration::from_millis(200)).await;
+    }
 }

@@ -39,8 +39,8 @@ async fn main() -> anyhow::Result<()> {
         std::process::exit(1);
     }
     let record_chunks: Vec<Vec<SalesNavigatorRecord>> =
-        records.chunks(2).map(|c| c.to_vec()).collect();
-    let record_chunks = record_chunks[..3].to_vec();
+        records.chunks(15).map(|c| c.to_vec()).collect();
+    let record_chunks = record_chunks[..2].to_vec();
 
     let mid = record_chunks.len() / 2;
     let (half_one, half_two) = record_chunks.split_at(mid);

@@ -9,8 +9,7 @@ pub const LCM_API: &str = "https://api.lessannoyingcrm.com/v2/";
 // Enums
 #[derive(strum::EnumString, Serialize, Clone, Debug)]
 pub enum APIAction {
-    GetContacts,
-    GetCompanies,
+    CreateContact,
 }
 
 // Traits

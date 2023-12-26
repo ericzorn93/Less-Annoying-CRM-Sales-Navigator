@@ -1,6 +1,9 @@
 extern crate dotenv;
 
 use clap::Parser;
+use lessannoyingcrm_salesnavigator::api;
+use lessannoyingcrm_salesnavigator::api::APIAction;
+use lessannoyingcrm_salesnavigator::api::APISend;
 use lessannoyingcrm_salesnavigator::cli;
 use lessannoyingcrm_salesnavigator::csv;
 use tokio::fs;
@@ -26,6 +29,11 @@ async fn main() -> anyhow::Result<()> {
     }
     let records = csv::parser::parse_csv(&args.file_path)?;
     println!("{:?}", records);
+
+    let search_terms = vec!["Jon".to_string()];
+    let req = api::get_contacts::CompanyContactSearchRequest::new(search_terms);
+    let res = req.send(&lcm_api_key, APIAction::GetContacts).await?;
+    println!("Response is {:?}", res);
 
     Ok(())
 }

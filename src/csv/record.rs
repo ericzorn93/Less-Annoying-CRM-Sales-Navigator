@@ -21,10 +21,10 @@ pub struct SalesNavigatorRecord {
     #[serde(rename(deserialize = "Company Industry"))]
     pub company_industry: String,
 
-    #[serde(rename(
-        deserialize = "Prospect Connections",
-        serialize = "prospectConnections"
-    ))]
+    #[serde(rename(deserialize = "Prospect Linkedin URL"))]
+    pub linkedin_url: String,
+
+    #[serde(rename(deserialize = "Prospect Connections"))]
     pub prospect_connections: u128,
 
     #[serde(rename(deserialize = "Years in Position"))]
@@ -34,8 +34,10 @@ pub struct SalesNavigatorRecord {
     pub years_in_company: u32,
 
     #[serde(skip_deserializing)]
-    #[serde(rename(serialize = "dateContactAdded"))]
     pub date_contact_added: chrono::DateTime<Utc>,
+
+    #[serde(skip_deserializing)]
+    pub file_name: String,
 }
 
 impl SalesNavigatorRecord {

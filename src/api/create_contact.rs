@@ -35,14 +35,17 @@ pub struct CreateContactRequest {
     #[serde(rename(serialize = "Job Title"))]
     job_title: String,
 
+    #[serde(rename(serialize = "LinkedIn Profile"))]
+    linkedin_url: String,
+
     #[serde(rename(serialize = "Company Name"))]
     company_name: String,
 
-    #[serde(rename(serialize = "Website"))]
-    websites: Vec<Website>,
-
     #[serde(rename(serialize = "Division or Area Of Specialization"))]
     company_industry: String,
+
+    #[serde(rename(serialize = "Website"))]
+    websites: Vec<Website>,
 
     #[serde(rename(serialize = "Prospect Connections"))]
     prospect_connections: String,
@@ -55,6 +58,11 @@ pub struct CreateContactRequest {
 
     #[serde(rename(serialize = "Contact Added Date"))]
     date_contact_added: String,
+
+    // This is going to be the name of the CSV file being
+    // uploaded without the use of the file extension (.csv)
+    #[serde(rename(serialize = "Linkedin List Search Query"))]
+    linkedin_search_query: String,
 }
 
 impl CreateContactRequest {
@@ -64,7 +72,7 @@ impl CreateContactRequest {
         record: &'a SalesNavigatorRecord,
     ) -> CreateContactRequest {
         let mut websites = Vec::<Website>::new();
-        websites.push(Website::new(record.company_url.to_owned()));
+        websites.push(Website::new(record.company_url.clone()));
 
         let formatted_date = record.date_contact_added.format("%Y-%m-%d").to_string();
 
@@ -75,12 +83,14 @@ impl CreateContactRequest {
             name: record.full_name(),
             job_title: record.title.to_string(),
             company_name: record.company_name.to_string(),
+            linkedin_url: record.linkedin_url.to_string(),
             websites,
             company_industry: record.company_industry.to_string(),
             prospect_connections: record.prospect_connections.to_string(),
             years_in_position: record.years_in_position,
             years_in_company: record.years_in_company,
             date_contact_added: formatted_date,
+            linkedin_search_query: record.file_name.to_string(),
         };
     }
 }
@@ -104,7 +114,7 @@ impl APISend<CreateContactResponse> for CreateContactRequest {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub struct CreateContactResponse {
     #[serde(rename(deserialize = "ContactId"))]
     pub contact_id: String,

@@ -35,6 +35,9 @@ pub struct SalesNavigatorRecord {
 
     #[serde(skip_deserializing)]
     pub date_contact_added: chrono::DateTime<Utc>,
+
+    #[serde(skip_deserializing)]
+    pub file_name: String,
 }
 
 impl SalesNavigatorRecord {

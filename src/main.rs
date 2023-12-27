@@ -1,11 +1,11 @@
 extern crate dotenv;
 
-use core::time;
-
 use clap::Parser;
+use core::time;
 use lessannoyingcrm_salesnavigator::api::{create_contact, APIAction, APISend};
 use lessannoyingcrm_salesnavigator::cli;
 use lessannoyingcrm_salesnavigator::csv::{self, SalesNavigatorRecord};
+use regex::Regex;
 use tokio::fs;
 
 #[tokio::main]
@@ -32,8 +32,24 @@ async fn main() -> anyhow::Result<()> {
         std::process::exit(1);
     }
 
+    if !args.file_path.ends_with(".csv") {
+        println!("We must be using CSV files for now");
+        std::process::exit(1);
+    }
+
+    // Get File Name without Extension
+    let re = Regex::new(r"(?i)^(\./)?(.+)\.csv$").expect("Regex must be valid");
+    let captures = re.captures(&args.file_path);
+    if captures.is_none() {
+        println!("CSV File Path is not in the proper format");
+        std::process::exit(1);
+    }
+    let captures = captures.unwrap();
+    let file_name = captures.get(2).unwrap().as_str();
+    println!("Using File Name - {file_name}");
+
     // Aggregate Records into Chunks
-    let records = csv::parser::parse_csv(&args.file_path)?;
+    let records = csv::parser::parse_csv(&args.file_path, file_name)?;
     if records.is_empty() {
         println!("No CSV Records found");
         std::process::exit(1);

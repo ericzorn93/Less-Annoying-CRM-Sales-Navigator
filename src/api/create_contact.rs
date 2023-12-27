@@ -58,6 +58,11 @@ pub struct CreateContactRequest {
 
     #[serde(rename(serialize = "Contact Added Date"))]
     date_contact_added: String,
+
+    // This is going to be the name of the CSV file being
+    // uploaded without the use of the file extension (.csv)
+    #[serde(rename(serialize = "Linkedin List Search Query"))]
+    linkedin_search_query: String,
 }
 
 impl CreateContactRequest {
@@ -85,6 +90,7 @@ impl CreateContactRequest {
             years_in_position: record.years_in_position,
             years_in_company: record.years_in_company,
             date_contact_added: formatted_date,
+            linkedin_search_query: record.file_name.to_string(),
         };
     }
 }
@@ -92,22 +98,19 @@ impl CreateContactRequest {
 #[async_trait]
 impl APISend<CreateContactResponse> for CreateContactRequest {
     async fn send(&self, api_key: &str) -> Result<CreateContactResponse> {
-        println!("Uploading {} - {}", self.name, self.linkedin_url);
-        // let body = RPCCall::new(self.api_action.clone(), self.to_owned());
+        let body = RPCCall::new(self.api_action.clone(), self.to_owned());
 
-        // let client = reqwest::Client::new();
-        // let res: CreateContactResponse = client
-        //     .post(LCM_API)
-        //     .header("Authorization", api_key)
-        //     .json(&body)
-        //     .send()
-        //     .await?
-        //     .json()
-        //     .await?;
+        let client = reqwest::Client::new();
+        let res: CreateContactResponse = client
+            .post(LCM_API)
+            .header("Authorization", api_key)
+            .json(&body)
+            .send()
+            .await?
+            .json()
+            .await?;
 
-        // Ok(res)
-
-        Ok(CreateContactResponse::default())
+        Ok(res)
     }
 }
 

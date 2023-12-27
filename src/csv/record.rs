@@ -21,6 +21,9 @@ pub struct SalesNavigatorRecord {
     #[serde(rename(deserialize = "Company Industry"))]
     pub company_industry: String,
 
+    #[serde(rename(deserialize = "Prospect Linkedin URL"))]
+    pub linkedin_url: String,
+
     #[serde(rename(deserialize = "Prospect Connections"))]
     pub prospect_connections: u128,
 

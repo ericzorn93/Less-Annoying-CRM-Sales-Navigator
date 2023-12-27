@@ -35,14 +35,17 @@ pub struct CreateContactRequest {
     #[serde(rename(serialize = "Job Title"))]
     job_title: String,
 
+    #[serde(rename(serialize = "LinkedIn Profile"))]
+    linkedin_url: String,
+
     #[serde(rename(serialize = "Company Name"))]
     company_name: String,
 
-    #[serde(rename(serialize = "Website"))]
-    websites: Vec<Website>,
-
     #[serde(rename(serialize = "Division or Area Of Specialization"))]
     company_industry: String,
+
+    #[serde(rename(serialize = "Website"))]
+    websites: Vec<Website>,
 
     #[serde(rename(serialize = "Prospect Connections"))]
     prospect_connections: String,
@@ -75,6 +78,7 @@ impl CreateContactRequest {
             name: record.full_name(),
             job_title: record.title.to_string(),
             company_name: record.company_name.to_string(),
+            linkedin_url: record.linkedin_url.to_string(),
             websites,
             company_industry: record.company_industry.to_string(),
             prospect_connections: record.prospect_connections.to_string(),
@@ -88,23 +92,26 @@ impl CreateContactRequest {
 #[async_trait]
 impl APISend<CreateContactResponse> for CreateContactRequest {
     async fn send(&self, api_key: &str) -> Result<CreateContactResponse> {
-        let body = RPCCall::new(self.api_action.clone(), self.to_owned());
+        println!("Uploading {} - {}", self.name, self.linkedin_url);
+        // let body = RPCCall::new(self.api_action.clone(), self.to_owned());
 
-        let client = reqwest::Client::new();
-        let res: CreateContactResponse = client
-            .post(LCM_API)
-            .header("Authorization", api_key)
-            .json(&body)
-            .send()
-            .await?
-            .json()
-            .await?;
+        // let client = reqwest::Client::new();
+        // let res: CreateContactResponse = client
+        //     .post(LCM_API)
+        //     .header("Authorization", api_key)
+        //     .json(&body)
+        //     .send()
+        //     .await?
+        //     .json()
+        //     .await?;
 
-        Ok(res)
+        // Ok(res)
+
+        Ok(CreateContactResponse::default())
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub struct CreateContactResponse {
     #[serde(rename(deserialize = "ContactId"))]
     pub contact_id: String,

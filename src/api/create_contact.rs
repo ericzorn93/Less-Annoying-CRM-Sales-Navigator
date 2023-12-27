@@ -64,7 +64,7 @@ impl CreateContactRequest {
         record: &'a SalesNavigatorRecord,
     ) -> CreateContactRequest {
         let mut websites = Vec::<Website>::new();
-        websites.push(Website::new(record.company_url.to_owned()));
+        websites.push(Website::new(record.company_url.clone()));
 
         let formatted_date = record.date_contact_added.format("%Y-%m-%d").to_string();
 

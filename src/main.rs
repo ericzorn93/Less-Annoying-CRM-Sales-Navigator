@@ -8,6 +8,9 @@ use lessannoyingcrm_salesnavigator::csv::{self, SalesNavigatorRecord};
 use regex::Regex;
 use tokio::fs;
 
+// Constants
+const UPLOAD_BACKOFF_COEFFICIENT: u64 = 200;
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Parse environment variables
@@ -101,6 +104,6 @@ async fn handle_chunks(
                 .expect("LCM Create Customer Failed");
         }
 
-        tokio::time::sleep(time::Duration::from_millis(200)).await;
+        tokio::time::sleep(time::Duration::from_millis(UPLOAD_BACKOFF_COEFFICIENT)).await;
     }
 }

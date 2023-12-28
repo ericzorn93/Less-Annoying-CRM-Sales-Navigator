@@ -98,6 +98,8 @@ impl CreateContactRequest {
 #[async_trait]
 impl APISend<CreateContactResponse> for CreateContactRequest {
     async fn send(&self, api_key: &str) -> Result<CreateContactResponse> {
+        println!("Uploading {} - {}", self.name, self.company_name);
+
         let body = RPCCall::new(self.api_action.clone(), self.to_owned());
 
         let client = reqwest::Client::new();

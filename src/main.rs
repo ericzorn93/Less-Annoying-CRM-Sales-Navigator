@@ -9,7 +9,7 @@ use regex::Regex;
 use tokio::fs;
 
 // Constants
-const UPLOAD_BACKOFF_COEFFICIENT: u64 = 200;
+const UPLOAD_BACKOFF_COEFFICIENT_MILLIS: u64 = 200;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -104,6 +104,9 @@ async fn handle_chunks(
                 .expect("LCM Create Customer Failed");
         }
 
-        tokio::time::sleep(time::Duration::from_millis(UPLOAD_BACKOFF_COEFFICIENT)).await;
+        tokio::time::sleep(time::Duration::from_millis(
+            UPLOAD_BACKOFF_COEFFICIENT_MILLIS,
+        ))
+        .await;
     }
 }
